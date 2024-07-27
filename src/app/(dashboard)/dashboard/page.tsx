@@ -1,3 +1,4 @@
+import Board from "@/components/dashboard/Board";
 import {
   Card,
   CardContent,
@@ -15,9 +16,6 @@ import {
   Share2,
   Sparkle,
 } from "lucide-react";
-import Image from "next/image";
-import { title } from "process";
-import React from "react";
 
 const data = [
   {
@@ -61,7 +59,7 @@ const iconData = [
 
 const page = () => {
   return (
-    <div className="flex flex-col px-4 py-6 h-screen">
+    <div className="flex flex-col px-4 py-6 h-screen bg-[#F7F7F7]">
       {/* greeting */}
       <div className="flex items-center justify-between">
         <h1 className="text-4xl font-semibold">Good Morning, Anjum!</h1>
@@ -79,7 +77,7 @@ const page = () => {
               <CardContent className="p-1">
                 <img src="/share.jpg" alt={item.title} className="w-[300px]" />
               </CardContent>
-              <CardHeader className="p-1">
+              <CardHeader className="p-1 space-y-0">
                 <CardTitle className="text-lg">{item.title}</CardTitle>
                 <CardDescription>{item.description}</CardDescription>
               </CardHeader>
@@ -89,8 +87,8 @@ const page = () => {
       </div>
 
       {/* icon */}
-      <div className="flex items-center justify-between my-2">
-        <div className="border rounded-md flex items-center justify-between p-1">
+      <div className="flex items-center justify-between my-2 ">
+        <div className="border rounded-md flex items-center justify-between p-1 bg-white">
           <input
             placeholder="Search"
             className="bg-transparent border-0 focus:outline-none focus:ring-0"
@@ -114,7 +112,9 @@ const page = () => {
       </div>
 
       {/* task board */}
-      <div></div>
+      <div className="flex items-center justify-between gap-4 bg-white">
+        <Board />
+      </div>
     </div>
   );
 };

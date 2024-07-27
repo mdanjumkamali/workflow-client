@@ -23,6 +23,7 @@ const config = {
           "linear-gradient(180deg, #FFFFFF 0%, #AFA3FF 100%)",
         "button-gradient":
           "linear-gradient(180deg, #4C38C2 0%, #2F2188 100%), linear-gradient(0deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.3))",
+        "black-gradient": "linear-gradient(180deg, #3A3A3A 0%, #202020 100%)",
       },
       colors: {
         border: "hsl(var(--border))",
