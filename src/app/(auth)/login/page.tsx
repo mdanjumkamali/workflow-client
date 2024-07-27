@@ -15,13 +15,13 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useAppDispatch } from "@/redux/redux.hooks";
-import { signupThunk } from "@/redux/thunk/auth.thunk";
+import { loginThunk } from "@/redux/thunk/auth.thunk";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
-const signUpSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters long."),
+const loginSchema = z.object({
   email: z
     .string()
     .email("Please enter a valid email address.")
@@ -32,16 +32,16 @@ const signUpSchema = z.object({
     .nonempty("Password is required."),
 });
 
-interface SignUpFormData {
-  name: string;
+interface LoginFormData {
   email: string;
   password: string;
 }
 
 const SignUpPage = () => {
   const dispatch = useAppDispatch();
-  const form = useForm<SignUpFormData>({
-    resolver: zodResolver(signUpSchema),
+  const router = useRouter();
+  const form = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -50,11 +50,11 @@ const SignUpPage = () => {
     setShowPassword(!showPassword);
   };
 
-  const onSubmit: SubmitHandler<SignUpFormData> = async (data) => {
+  const onSubmit: SubmitHandler<LoginFormData> = async (data) => {
     try {
-      await dispatch(signupThunk(data)).unwrap();
-
-      toast.success("Account created successfully!");
+      await dispatch(loginThunk(data)).unwrap();
+      router.push("/");
+      toast.success("Login Successfully!");
     } catch (error: any) {}
   };
 
@@ -66,18 +66,6 @@ const SignUpPage = () => {
         </h1>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Input type="text" placeholder="Your Name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
             <FormField
               control={form.control}
               name="email"
@@ -123,14 +111,14 @@ const SignUpPage = () => {
               )}
             />
             <Button type="submit" className="w-full bg-button-gradient">
-              Sign Up
+              Login
             </Button>
           </form>
         </Form>
         <div className="text-center my-2">
-          Already have an account?{" "}
-          <Link href="/login" className="text-[#4534AC]">
-            Log in.
+          Don’t have an account? Create a{" "}
+          <Link href="/signup" className="text-[#4534AC]">
+            new account.
           </Link>
         </div>
       </div>
