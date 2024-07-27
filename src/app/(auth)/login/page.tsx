@@ -53,7 +53,7 @@ const SignUpPage = () => {
   const onSubmit: SubmitHandler<LoginFormData> = async (data) => {
     try {
       await dispatch(loginThunk(data)).unwrap();
-      router.push("/");
+      router.push("/dashboard");
       toast.success("Login Successfully!");
     } catch (error: any) {}
   };
