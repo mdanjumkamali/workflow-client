@@ -1,3 +1,4 @@
+"use client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   ArrowDownToLine,
@@ -11,6 +12,9 @@ import {
   SquareKanban,
   Users,
 } from "lucide-react";
+
+import { useAppDispatch, useAppSelector } from "@/redux/redux.hooks";
+import { closeSheet, openSheet } from "@/redux/slice/toggle.slice";
 
 const link = [
   {
@@ -36,6 +40,11 @@ const link = [
 ];
 
 const Sidebar = () => {
+  const dispatch = useAppDispatch();
+  const isToggled = useAppSelector((state) => state.toggle.isSheetOpen);
+  const handleClick = () => {
+    dispatch(openSheet());
+  };
   return (
     <div className="flex flex-col justify-between px-4 py-6 h-screen">
       <div>
@@ -79,7 +88,10 @@ const Sidebar = () => {
 
         {/* button */}
         <div className="py-3">
-          <button className="flex items-center justify-center gap-1 py-3 rounded-md bg-button-gradient text-white w-full">
+          <button
+            className="flex items-center justify-center gap-1 py-3 rounded-md bg-button-gradient text-white w-full"
+            onClick={handleClick}
+          >
             Create new task <CirclePlus />
           </button>
         </div>

@@ -1,4 +1,5 @@
 import Board from "@/components/dashboard/Board";
+import Sheet from "@/components/dashboard/ToggleSheet";
 import {
   Card,
   CardContent,
@@ -115,6 +116,7 @@ const page = () => {
       <div className="flex items-center justify-between gap-4 bg-white">
         <Board />
       </div>
+      <Sheet />
     </div>
   );
 };
