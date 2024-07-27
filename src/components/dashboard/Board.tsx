@@ -22,7 +22,7 @@ interface BoardState {
   [key: string]: Column;
 }
 
-const formatDate = (isoDate: string): string => {
+const formatDate = (isoDate: Date): string => {
   const date = new Date(isoDate);
   const formattedDate = date.toISOString().split("T")[0];
   return formattedDate;
@@ -107,7 +107,7 @@ const Board: React.FC = () => {
                   {column.tasks.map((task, index) => (
                     <Draggable
                       key={task.id}
-                      draggableId={task.id}
+                      draggableId={task.id!}
                       index={index}
                     >
                       {(provided) => (
