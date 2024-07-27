@@ -14,6 +14,8 @@ import { z } from "zod";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Calendar, DiamondPlus, Loader, Pencil, Plus } from "lucide-react";
+import { useAppDispatch } from "@/redux/redux.hooks";
+import { createTaskThunk } from "@/redux/thunk/task.thunk";
 
 const loginSchema = z.object({
   title: z.string().nonempty("Title is required."),
@@ -37,15 +39,22 @@ interface FormData {
 }
 
 const InputField = () => {
+  const dispatch = useAppDispatch();
   const form = useForm<FormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      deadline: new Date(), // Default date if needed
+      title: "",
+      status: "To-Do",
+      priority: "Low",
+      deadline: new Date(),
+      description: "",
     },
   });
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     try {
+      // console.log(data);
+      await dispatch(createTaskThunk(data)).unwrap();
       toast.success("Form submitted successfully!");
     } catch (error: any) {
       toast.error("An error occurred while submitting the form.");
@@ -88,13 +97,10 @@ const InputField = () => {
                     {...field}
                     className="border rounded-md p-2 bg-white w-fit text-[#666666]"
                   >
-                    <option value="" disabled>
-                      Select status
-                    </option>
-                    <option value="active">To Do</option>
-                    <option value="inactive">In Progress</option>
-                    <option value="pending">Under Review</option>
-                    <option value="finished">Finished</option>
+                    <option value="To-Do">To Do</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Under Review">Under Review</option>
+                    <option value="Completed">Finished</option>
                   </select>
                 </FormControl>
                 <FormMessage />
@@ -116,12 +122,9 @@ const InputField = () => {
                     {...field}
                     className="border rounded-md p-2 bg-white w-fit text-[#666666]"
                   >
-                    <option value="" disabled>
-                      Select priority
-                    </option>
-                    <option value="low">Low</option>
-                    <option value="medium">Medium</option>
-                    <option value="urgent">Urgent</option>
+                    <option value="Low">Low</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Urgent">Urgent</option>
                   </select>
                 </FormControl>
                 <FormMessage />

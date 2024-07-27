@@ -1,9 +1,9 @@
 export interface Task {
-  id: string;
+  id?: string;
   title: string;
   description: string;
   status: string;
   priority: string;
-  deadline: string;
-  user: string;
+  deadline: Date;
+  user?: string;
 }

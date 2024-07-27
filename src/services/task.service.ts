@@ -11,7 +11,6 @@ interface TasksResponse {
 
 export const fetchTasksService = async (): Promise<TasksResponse> => {
   const response = await httpsClient.get<TasksResponse>("api/task");
-  console.log(response.data);
   return response.data;
 };
 
