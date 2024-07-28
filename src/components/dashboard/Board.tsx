@@ -11,6 +11,7 @@ import {
   DropResult,
 } from "react-beautiful-dnd";
 import TaskCard from "./TaskCard";
+import { openSheet } from "@/redux/slice/toggle.slice";
 
 interface Column {
   id: string;
@@ -31,6 +32,10 @@ const formatDate = (isoDate: Date): string => {
 const Board: React.FC = () => {
   const dispatch = useAppDispatch();
   const { tasks, loading, error } = useAppSelector((s) => s.task);
+  const isToggled = useAppSelector((state) => state.toggle.isSheetOpen);
+  const handleClick = () => {
+    dispatch(openSheet());
+  };
 
   const columns: BoardState = {
     todo: {
@@ -129,7 +134,10 @@ const Board: React.FC = () => {
                       )}
                     </Draggable>
                   ))}
-                  <button className="w-full mt-3 flex items-center justify-between bg-black-gradient text-white p-2 rounded-md">
+                  <button
+                    className="w-full mt-3 flex items-center justify-between bg-black-gradient text-white p-2 rounded-md"
+                    onClick={handleClick}
+                  >
                     Add New
                     <Plus />
                   </button>

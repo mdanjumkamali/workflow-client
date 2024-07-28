@@ -10,12 +10,12 @@ interface TasksResponse {
 }
 
 export const fetchTasksService = async (): Promise<TasksResponse> => {
-  const response = await httpsClient.get<TasksResponse>("api/task");
+  const response = await httpsClient.get<TasksResponse>("task");
   return response.data;
 };
 
 export const createTaskService = async (input: Task): Promise<TaskResponse> => {
-  const response = await httpsClient.post<TaskResponse>("api/task", input);
+  const response = await httpsClient.post<TaskResponse>("task", input);
   return response.data;
 };
 
@@ -28,5 +28,5 @@ export const updateTaskService = async (input: Task): Promise<TaskResponse> => {
 };
 
 export const deleteTaskService = async (taskId: string): Promise<void> => {
-  await httpsClient.delete(`api/task/${taskId}`);
+  await httpsClient.delete(`task/${taskId}`);
 };

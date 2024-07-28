@@ -1,3 +1,5 @@
+"use client";
+
 import Board from "@/components/dashboard/Board";
 import Sheet from "@/components/dashboard/ToggleSheet";
 import {
@@ -7,6 +9,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useAppDispatch, useAppSelector } from "@/redux/redux.hooks";
+import { openSheet } from "@/redux/slice/toggle.slice";
 
 import {
   Calendar,
@@ -58,7 +62,12 @@ const iconData = [
   },
 ];
 
-const page = () => {
+const Page = () => {
+  const dispatch = useAppDispatch();
+  const isToggled = useAppSelector((state) => state.toggle.isSheetOpen);
+  const handleClick = () => {
+    dispatch(openSheet());
+  };
   return (
     <div className="flex flex-col px-4 py-6 h-screen bg-[#F7F7F7]">
       {/* greeting */}
@@ -106,7 +115,10 @@ const page = () => {
               <span className="text-md">{item.title}</span>
             </div>
           ))}
-          <button className="flex items-center justify-center gap-1 p-2 rounded-md bg-button-gradient text-white">
+          <button
+            className="flex items-center justify-center gap-1 p-2 rounded-md bg-button-gradient text-white"
+            onClick={handleClick}
+          >
             Create new <CirclePlus />
           </button>
         </div>
@@ -121,4 +133,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

@@ -26,7 +26,7 @@ const Sheet = () => {
           {/* icon */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <X />
+              <X onClick={handleClose} className="cursor-pointer" />
               <Minimize2 />
             </div>
             <div className="flex items-center gap-6">

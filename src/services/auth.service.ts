@@ -12,17 +12,11 @@ interface AuthResponse {
 }
 
 export const signupService = async (input: Signup): Promise<AuthResponse> => {
-  const response = await httpsClient.post<AuthResponse>(
-    "api/auth/signup",
-    input
-  );
+  const response = await httpsClient.post<AuthResponse>("auth/signup", input);
   return response.data;
 };
 
 export const loginService = async (input: Login): Promise<AuthResponse> => {
-  const response = await httpsClient.post<AuthResponse>(
-    "api/auth/login",
-    input
-  );
+  const response = await httpsClient.post<AuthResponse>("auth/login", input);
   return response.data;
 };
