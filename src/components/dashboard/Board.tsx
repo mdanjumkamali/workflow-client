@@ -1,9 +1,14 @@
 "use client";
+
 import React, { useEffect } from "react";
 import { Task } from "@/interfaces/task.interface";
 import { useAppDispatch, useAppSelector } from "@/redux/redux.hooks";
 import { openSheet } from "@/redux/slice/toggle.slice";
-import { fetchTasksThunk, updateTaskThunk } from "@/redux/thunk/task.thunk";
+import {
+  deleteTaskThunk,
+  fetchTasksThunk,
+  updateTaskThunk,
+} from "@/redux/thunk/task.thunk";
 import { AlignLeft, Plus } from "lucide-react";
 import {
   DragDropContext,
@@ -15,7 +20,7 @@ import { updateTaskStatus, TaskStatus } from "@/redux/slice/taskStatus.slice";
 import TaskCard from "./TaskCard";
 
 interface Column {
-  id: string;
+  id: TaskStatus;
   title: string;
   tasks: Task[];
 }
@@ -37,30 +42,34 @@ const Board: React.FC = () => {
 
   useEffect(() => {
     dispatch(fetchTasksThunk());
-  }, [dispatch]);
+  }, []);
 
   const handleClick = (status: TaskStatus) => {
     dispatch(openSheet());
     dispatch(updateTaskStatus(status));
   };
 
+  const handleDeleteTask = (taskId: string) => {
+    dispatch(deleteTaskThunk(taskId));
+  };
+
   const columns: BoardState = {
-    todo: {
+    [TaskStatus.ToDo]: {
       id: TaskStatus.ToDo,
       title: "To Do",
       tasks: tasks.filter((task) => task.status === TaskStatus.ToDo),
     },
-    inprogress: {
+    [TaskStatus.InProgress]: {
       id: TaskStatus.InProgress,
       title: "In Progress",
       tasks: tasks.filter((task) => task.status === TaskStatus.InProgress),
     },
-    review: {
+    [TaskStatus.UnderReview]: {
       id: TaskStatus.UnderReview,
       title: "Under Review",
       tasks: tasks.filter((task) => task.status === TaskStatus.UnderReview),
     },
-    finished: {
+    [TaskStatus.Finished]: {
       id: TaskStatus.Finished,
       title: "Finished",
       tasks: tasks.filter((task) => task.status === TaskStatus.Finished),
@@ -68,14 +77,23 @@ const Board: React.FC = () => {
   };
 
   const onDragEnd = (result: DropResult) => {
-    if (!result.destination) return;
-
     const { source, destination } = result;
-    const sourceColumn = columns[source.droppableId];
-    const destColumn = columns[destination.droppableId];
+
+    if (!destination) {
+      console.log("Dropped outside of any droppable area");
+      return;
+    }
+
+    const sourceColumn = columns[source.droppableId as TaskStatus];
+    const destColumn = columns[destination.droppableId as TaskStatus];
+
+    if (!sourceColumn || !destColumn) {
+      console.error("Source or destination column is undefined");
+      return;
+    }
 
     if (source.droppableId === destination.droppableId) {
-      // Moving within the same column
+      // Handle drag within the same column
       const updatedTasks = Array.from(sourceColumn.tasks);
       const [movedTask] = updatedTasks.splice(source.index, 1);
       updatedTasks.splice(destination.index, 0, movedTask);
@@ -83,11 +101,11 @@ const Board: React.FC = () => {
       dispatch(
         updateTaskThunk({
           ...movedTask,
-          status: sourceColumn.id as TaskStatus,
+          status: sourceColumn.id,
         })
       );
     } else {
-      // Moving between columns
+      // Handle drag between columns
       const sourceTasks = Array.from(sourceColumn.tasks);
       const [movedTask] = sourceTasks.splice(source.index, 1);
       const destTasks = Array.from(destColumn.tasks);
@@ -96,7 +114,7 @@ const Board: React.FC = () => {
       dispatch(
         updateTaskThunk({
           ...movedTask,
-          status: destColumn.id as TaskStatus,
+          status: destColumn.id,
         })
       );
     }
@@ -122,9 +140,7 @@ const Board: React.FC = () => {
                   className="min-h-[500px]"
                 >
                   {column.tasks.map((task, index) => {
-                    // Ensure task._id is used as draggableId
-                    const draggableId =
-                      task._id || `draggable-${task.title}-${index}`;
+                    const draggableId = task._id!;
 
                     return (
                       <Draggable
@@ -146,6 +162,7 @@ const Board: React.FC = () => {
                               date={formatDate(task.deadline)}
                               time={formatDate(task.deadline)}
                               status={task.status}
+                              onDelete={() => handleDeleteTask(task._id!)}
                             />
                           </div>
                         )}
@@ -154,7 +171,7 @@ const Board: React.FC = () => {
                   })}
                   <button
                     className="w-full mt-3 flex items-center justify-between bg-black-gradient text-white p-2 rounded-md"
-                    onClick={() => handleClick(column.id as TaskStatus)}
+                    onClick={() => handleClick(column.id)}
                   >
                     Add New
                     <Plus />

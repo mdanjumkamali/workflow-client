@@ -56,6 +56,7 @@ export const updateTaskThunk = createAsyncThunk(
   "tasks/updateTask",
   async (task: Task, thunkAPI) => {
     try {
+      console.log(task);
       thunkAPI.dispatch(updateTaskStart());
       const response = await updateTaskService(task);
       thunkAPI.dispatch(updateTaskSuccess(response.task));

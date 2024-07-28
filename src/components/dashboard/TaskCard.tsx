@@ -1,4 +1,3 @@
-import React from "react";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -7,7 +6,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { AlignLeft, Clock, Plus } from "lucide-react";
+import { Clock, Trash2 } from "lucide-react";
+import React from "react";
 
 interface TaskCardProps {
   title: string;
@@ -16,6 +16,7 @@ interface TaskCardProps {
   date: string;
   time: string;
   status: string;
+  onDelete: () => void;
 }
 
 const getBadgeColor = (badge: string) => {
@@ -38,7 +39,14 @@ const TaskCard: React.FC<TaskCardProps> = ({
   date,
   time,
   status,
+  onDelete,
 }) => {
+  const handleDelete = () => {
+    if (onDelete) {
+      onDelete();
+    }
+  };
+
   return (
     <div className="flex flex-col space-y-2">
       <div>
@@ -57,7 +65,10 @@ const TaskCard: React.FC<TaskCardProps> = ({
               <Clock />
               {date}
             </span>
-            <span className="text-[#797979]">{time}</span>
+            <span className="text-[#797979] flex items-center justify-between">
+              {time}
+              <Trash2 className="cursor-pointer" onClick={handleDelete} />
+            </span>
           </CardContent>
         </Card>
       </div>
