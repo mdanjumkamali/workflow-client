@@ -1,7 +1,6 @@
 import axios, { AxiosInstance, AxiosError } from "axios";
 import toast from "react-hot-toast";
 import store from "../redux/store";
-import Cookies from "js-cookie";
 import { logout } from "@/redux/slice/auth.slice";
 
 // Define an interface for the expected error response

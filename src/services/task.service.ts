@@ -21,7 +21,7 @@ export const createTaskService = async (input: Task): Promise<TaskResponse> => {
 
 export const updateTaskService = async (input: Task): Promise<TaskResponse> => {
   const response = await httpsClient.put<TaskResponse>(
-    `api/task/${input.id}`,
+    `/task/${input._id}`,
     input
   );
   return response.data;

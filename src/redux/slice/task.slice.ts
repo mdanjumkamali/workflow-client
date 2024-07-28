@@ -47,7 +47,7 @@ const taskSlice = createSlice({
     },
     updateTaskSuccess(state, action: PayloadAction<Task>) {
       const index = state.tasks.findIndex(
-        (task) => task.id === action.payload.id
+        (task) => task._id === action.payload._id
       );
       if (index !== -1) {
         state.tasks[index] = action.payload;
@@ -63,7 +63,7 @@ const taskSlice = createSlice({
       state.error = null;
     },
     deleteTaskSuccess(state, action: PayloadAction<string>) {
-      state.tasks = state.tasks.filter((task) => task.id !== action.payload);
+      state.tasks = state.tasks.filter((task) => task._id !== action.payload);
       state.loading = false;
     },
     deleteTaskFailure(state, action: PayloadAction<string>) {
