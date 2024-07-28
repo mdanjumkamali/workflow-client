@@ -9,7 +9,6 @@ export const loginThunk = createAsyncThunk(
   async (input: Login, thunkAPI) => {
     const user = await loginService(input);
     thunkAPI.dispatch(login({ token: user.token }));
-    console.log(user);
     thunkAPI.dispatch(setUser(user.user));
   }
 );

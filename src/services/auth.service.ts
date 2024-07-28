@@ -18,5 +18,6 @@ export const signupService = async (input: Signup): Promise<AuthResponse> => {
 
 export const loginService = async (input: Login): Promise<AuthResponse> => {
   const response = await httpsClient.post<AuthResponse>("auth/login", input);
+  console.log(response.data);
   return response.data;
 };

@@ -50,10 +50,10 @@ const Sidebar = () => {
     dispatch(updateTaskStatus(status));
   };
 
-  const logOut = () => {
-    dispatch(logout());
-    window.location.replace("/login");
-  };
+  // const logOut = () => {
+  //   dispatch(logout());
+  //   window.location.replace("/login");
+  // };
 
   return (
     <div className="flex flex-col justify-between px-4 py-6 h-screen">
@@ -76,7 +76,7 @@ const Sidebar = () => {
           </div>
           <button
             className="bg-[#F4F4F4] px-3 py-2 rounded-md text-[#797979]"
-            onClick={logOut}
+            // onClick={() => dispatch(logout())}
           >
             Logout
           </button>
