@@ -28,6 +28,7 @@ const loginSchema = z.object({
       (date) => date instanceof Date && !isNaN(date.getTime()),
       "Deadline is required and must be a valid date."
     ),
+  description: z.string().optional(),
 });
 
 interface FormData {
