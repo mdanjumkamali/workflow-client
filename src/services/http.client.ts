@@ -15,9 +15,7 @@ class httpClient {
 
   constructor() {
     this.client = axios.create({
-      // baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
-      baseURL: "https://workflow-omega-plum.vercel.app/api/",
-      // baseURL: "http://localhost:8000/api/",
+      baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
       withCredentials: true,
     });
 
