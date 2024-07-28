@@ -15,14 +15,14 @@ class httpClient {
 
   constructor() {
     this.client = axios.create({
-      baseURL: "https://workflow-phi.vercel.app/api/",
-
+      // baseURL: "https://workflow-phi.vercel.app/api/",
+      baseURL: "http://localhost:8000/api/",
       withCredentials: true,
     });
 
     this.client.interceptors.request.use(
       (config) => {
-        const token = Cookies.get("authToken");
+        const token = localStorage.getItem("token"); // Change here
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
         }
