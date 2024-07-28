@@ -33,6 +33,9 @@ const formatDate = (isoDate: Date): string => {
 const Board: React.FC = () => {
   const dispatch = useAppDispatch();
   const { tasks, loading, error } = useAppSelector((s) => s.task);
+  useEffect(() => {
+    dispatch(fetchTasksThunk());
+  }, []);
 
   const handleClick = (status: TaskStatus) => {
     dispatch(openSheet());
@@ -61,10 +64,6 @@ const Board: React.FC = () => {
       tasks: tasks.filter((task) => task.status === TaskStatus.Finished),
     },
   };
-
-  useEffect(() => {
-    dispatch(fetchTasksThunk());
-  }, [dispatch]);
 
   const onDragEnd = (result: DropResult) => {
     if (!result.destination) return;
