@@ -10,6 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useAppDispatch, useAppSelector } from "@/redux/redux.hooks";
+import { TaskStatus, updateTaskStatus } from "@/redux/slice/taskStatus.slice";
 import { openSheet } from "@/redux/slice/toggle.slice";
 
 import {
@@ -64,15 +65,18 @@ const iconData = [
 
 const Page = () => {
   const dispatch = useAppDispatch();
-  const isToggled = useAppSelector((state) => state.toggle.isSheetOpen);
-  const handleClick = () => {
+  const username = useAppSelector((state) => state.user.name);
+  const handleClick = (status: TaskStatus) => {
     dispatch(openSheet());
+    dispatch(updateTaskStatus(status));
   };
   return (
     <div className="flex flex-col px-4 py-6 h-screen bg-[#F7F7F7]">
       {/* greeting */}
       <div className="flex items-center justify-between">
-        <h1 className="text-4xl font-semibold">Good Morning, Anjum!</h1>
+        <h1 className="text-4xl font-semibold">
+          Good Morning, {username || "John"}!
+        </h1>
         <div className="flex items-center gap-2">
           Help & feedback
           <CircleHelp />
@@ -117,7 +121,7 @@ const Page = () => {
           ))}
           <button
             className="flex items-center justify-center gap-1 p-2 rounded-md bg-button-gradient text-white"
-            onClick={handleClick}
+            onClick={() => handleClick(TaskStatus.ToDo)}
           >
             Create new <CirclePlus />
           </button>
@@ -125,7 +129,7 @@ const Page = () => {
       </div>
 
       {/* task board */}
-      <div className="flex items-center justify-between gap-4 bg-white">
+      <div className="bg-white overflow-auto h-full w-full rounded-md mt-2">
         <Board />
       </div>
       <Sheet />

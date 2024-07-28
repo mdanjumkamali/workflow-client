@@ -1,6 +1,7 @@
 "use client";
 import { Task } from "@/interfaces/task.interface";
 import { useAppDispatch, useAppSelector } from "@/redux/redux.hooks";
+import { openSheet } from "@/redux/slice/toggle.slice";
 import { fetchTasksThunk, updateTaskThunk } from "@/redux/thunk/task.thunk";
 import { AlignLeft, Plus } from "lucide-react";
 import React, { useEffect } from "react";
@@ -11,7 +12,7 @@ import {
   DropResult,
 } from "react-beautiful-dnd";
 import TaskCard from "./TaskCard";
-import { openSheet } from "@/redux/slice/toggle.slice";
+import { updateTaskStatus, TaskStatus } from "@/redux/slice/taskStatus.slice";
 
 interface Column {
   id: string;
@@ -32,31 +33,32 @@ const formatDate = (isoDate: Date): string => {
 const Board: React.FC = () => {
   const dispatch = useAppDispatch();
   const { tasks, loading, error } = useAppSelector((s) => s.task);
-  const isToggled = useAppSelector((state) => state.toggle.isSheetOpen);
-  const handleClick = () => {
+
+  const handleClick = (status: TaskStatus) => {
     dispatch(openSheet());
+    dispatch(updateTaskStatus(status)); // Set the initial status based on the column
   };
 
   const columns: BoardState = {
     todo: {
-      id: "todo",
+      id: TaskStatus.ToDo,
       title: "To Do",
-      tasks: tasks.filter((task) => task.status === "To-Do"),
+      tasks: tasks.filter((task) => task.status === TaskStatus.ToDo),
     },
     inprogress: {
-      id: "inprogress",
+      id: TaskStatus.InProgress,
       title: "In Progress",
-      tasks: tasks.filter((task) => task.status === "In Progress"),
+      tasks: tasks.filter((task) => task.status === TaskStatus.InProgress),
     },
     review: {
-      id: "review",
+      id: TaskStatus.UnderReview,
       title: "Under Review",
-      tasks: tasks.filter((task) => task.status === "Under Review"),
+      tasks: tasks.filter((task) => task.status === TaskStatus.UnderReview),
     },
     finished: {
-      id: "finished",
+      id: TaskStatus.Finished,
       title: "Finished",
-      tasks: tasks.filter((task) => task.status === "Completed"),
+      tasks: tasks.filter((task) => task.status === TaskStatus.Finished),
     },
   };
 
@@ -76,16 +78,38 @@ const Board: React.FC = () => {
       const [movedTask] = updatedTasks.splice(source.index, 1);
       updatedTasks.splice(destination.index, 0, movedTask);
 
-      dispatch(updateTaskThunk({ ...movedTask, status: source.droppableId }));
+      const updatedColumn = {
+        ...sourceColumn,
+        tasks: updatedTasks,
+      };
+
+      dispatch(
+        updateTaskThunk({
+          ...movedTask,
+          status: updatedColumn.id as TaskStatus,
+        })
+      );
     } else {
       const sourceTasks = Array.from(sourceColumn.tasks);
       const [movedTask] = sourceTasks.splice(source.index, 1);
-
       const destTasks = Array.from(destColumn.tasks);
       destTasks.splice(destination.index, 0, movedTask);
 
+      const updatedSourceColumn = {
+        ...sourceColumn,
+        tasks: sourceTasks,
+      };
+
+      const updatedDestColumn = {
+        ...destColumn,
+        tasks: destTasks,
+      };
+
       dispatch(
-        updateTaskThunk({ ...movedTask, status: destination.droppableId })
+        updateTaskThunk({
+          ...movedTask,
+          status: updatedDestColumn.id as TaskStatus,
+        })
       );
     }
   };
@@ -95,7 +119,7 @@ const Board: React.FC = () => {
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <div className="flex flex-col md:flex-row items-start justify-between gap-4 p-4">
+      <div className="flex flex-col md:flex-row items-start justify-between gap-4">
         {Object.values(columns).map((column) => (
           <div key={column.id} className="w-full md:w-1/4 rounded-lg p-4">
             <div className="flex items-center justify-between text-[#555555] my-2">
@@ -105,6 +129,7 @@ const Board: React.FC = () => {
             <Droppable droppableId={column.id}>
               {(provided) => (
                 <div
+                  key={column.id}
                   {...provided.droppableProps}
                   ref={provided.innerRef}
                   className="min-h-[500px]"
@@ -124,7 +149,7 @@ const Board: React.FC = () => {
                         >
                           <TaskCard
                             title={task.title}
-                            description={task.description}
+                            description={task.description!}
                             badge={task.priority}
                             date={formatDate(task.deadline)}
                             time={formatDate(task.deadline)}
@@ -136,7 +161,7 @@ const Board: React.FC = () => {
                   ))}
                   <button
                     className="w-full mt-3 flex items-center justify-between bg-black-gradient text-white p-2 rounded-md"
-                    onClick={handleClick}
+                    onClick={() => handleClick(column.id as TaskStatus)}
                   >
                     Add New
                     <Plus />

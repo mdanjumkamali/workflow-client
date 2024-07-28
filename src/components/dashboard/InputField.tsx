@@ -7,19 +7,20 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { useAppDispatch, useAppSelector } from "@/redux/redux.hooks";
+import { TaskStatus } from "@/redux/slice/taskStatus.slice";
+import { createTaskThunk } from "@/redux/thunk/task.thunk";
 import { zodResolver } from "@hookform/resolvers/zod/dist/zod.js";
+import { Calendar, DiamondPlus, Loader, Pencil, Plus } from "lucide-react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import { SubmitHandler, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { z } from "zod";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import { Calendar, DiamondPlus, Loader, Pencil, Plus } from "lucide-react";
-import { useAppDispatch } from "@/redux/redux.hooks";
-import { createTaskThunk } from "@/redux/thunk/task.thunk";
 
 const loginSchema = z.object({
   title: z.string().nonempty("Title is required."),
-  status: z.string().nonempty("Status is required."),
+  status: z.nativeEnum(TaskStatus),
   priority: z.string().nonempty("Priority is required."),
   deadline: z
     .date()
@@ -27,24 +28,24 @@ const loginSchema = z.object({
       (date) => date instanceof Date && !isNaN(date.getTime()),
       "Deadline is required and must be a valid date."
     ),
-  description: z.string().nonempty("Description is required."),
 });
 
 interface FormData {
   title: string;
-  status: string;
+  status: TaskStatus;
   priority: string;
   deadline: Date;
-  description: string;
+  description?: string;
 }
 
 const InputField = () => {
   const dispatch = useAppDispatch();
+  const currentStatus = useAppSelector((state) => state.taskStatus.status);
   const form = useForm<FormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
       title: "",
-      status: "To-Do",
+      status: currentStatus,
       priority: "Low",
       deadline: new Date(),
       description: "",
@@ -53,7 +54,6 @@ const InputField = () => {
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     try {
-      // console.log(data);
       await dispatch(createTaskThunk(data)).unwrap();
       toast.success("Form submitted successfully!");
     } catch (error: any) {
@@ -97,10 +97,16 @@ const InputField = () => {
                     {...field}
                     className="border rounded-md p-2 bg-white w-fit text-[#666666]"
                   >
-                    <option value="To-Do">To Do</option>
-                    <option value="In Progress">In Progress</option>
-                    <option value="Under Review">Under Review</option>
-                    <option value="Completed">Finished</option>
+                    <option value={TaskStatus.ToDo}>{TaskStatus.ToDo}</option>
+                    <option value={TaskStatus.InProgress}>
+                      {TaskStatus.InProgress}
+                    </option>
+                    <option value={TaskStatus.UnderReview}>
+                      {TaskStatus.UnderReview}
+                    </option>
+                    <option value={TaskStatus.Finished}>
+                      {TaskStatus.Finished}
+                    </option>
                   </select>
                 </FormControl>
                 <FormMessage />
@@ -182,7 +188,7 @@ const InputField = () => {
           </div>
 
           <Button type="submit" className="w-full bg-button-gradient">
-            Submit
+            Save
           </Button>
         </form>
       </Form>
