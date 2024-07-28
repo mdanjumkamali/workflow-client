@@ -1,4 +1,4 @@
-import { configureStore, Middleware } from "@reduxjs/toolkit";
+import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "./slice/auth.slice";
 import taskReducer from "./slice/task.slice";
 import toggleReducer from "./slice/toggle.slice";
@@ -12,23 +12,7 @@ const persistConfig: PersistConfig<any> = {
   storage,
   whitelist: ["token", "isAuthenticated"],
 };
-
 const persistedAuthReducer = persistReducer(persistConfig, authReducer);
-
-const resetMiddleware: Middleware = (store) => (next) => (action) => {
-  const expirationTime = 24 * 60 * 60 * 1000;
-  const lastPersisted = parseInt(
-    localStorage.getItem("lastPersisted") || "0",
-    10
-  );
-
-  if (Date.now() - lastPersisted > expirationTime) {
-    storage.removeItem("persist:auth");
-    localStorage.setItem("lastPersisted", Date.now().toString());
-  }
-
-  return next(action);
-};
 
 const store = configureStore({
   reducer: {
@@ -38,10 +22,6 @@ const store = configureStore({
     toggle: toggleReducer,
     taskStatus: taskStatusReducer,
   },
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({
-      serializableCheck: false,
-    }).concat(resetMiddleware),
 });
 
 export const persistor = persistStore(store);
