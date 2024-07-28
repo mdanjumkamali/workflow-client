@@ -7,9 +7,12 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Task } from "@/interfaces/task.interface";
 import { useAppDispatch, useAppSelector } from "@/redux/redux.hooks";
+import { clearSelectedTask } from "@/redux/slice/task.slice";
 import { TaskStatus } from "@/redux/slice/taskStatus.slice";
-import { createTaskThunk } from "@/redux/thunk/task.thunk";
+import { closeSheet } from "@/redux/slice/toggle.slice";
+import { createTaskThunk, updateTaskThunk } from "@/redux/thunk/task.thunk";
 import { zodResolver } from "@hookform/resolvers/zod/dist/zod.js";
 import { Calendar, DiamondPlus, Loader, Pencil, Plus } from "lucide-react";
 import DatePicker from "react-datepicker";
@@ -31,6 +34,10 @@ const loginSchema = z.object({
   description: z.string().optional(),
 });
 
+interface InputFieldProps {
+  task?: Task | null;
+}
+
 interface FormData {
   title: string;
   status: TaskStatus;
@@ -39,24 +46,33 @@ interface FormData {
   description?: string;
 }
 
-const InputField = () => {
+const InputField: React.FC<InputFieldProps> = ({ task }) => {
+  console.log(task);
   const dispatch = useAppDispatch();
   const currentStatus = useAppSelector((state) => state.taskStatus.status);
+
   const form = useForm<FormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      title: "",
-      status: currentStatus,
-      priority: "Low",
-      deadline: new Date(),
-      description: "",
+      title: task?.title || "",
+      status: (task?.status as TaskStatus) || currentStatus,
+      priority: task?.priority || "Low",
+      deadline: task?.deadline ? new Date(task.deadline) : new Date(),
+      description: task?.description || "",
     },
   });
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     try {
-      await dispatch(createTaskThunk(data)).unwrap();
-      toast.success("Form submitted successfully!");
+      if (task?._id) {
+        await dispatch(updateTaskThunk({ ...data, _id: task._id })).unwrap();
+        toast.success("Task updated successfully!");
+      } else {
+        await dispatch(createTaskThunk(data)).unwrap();
+        toast.success("Task created successfully!");
+      }
+      dispatch(closeSheet());
+      dispatch(clearSelectedTask());
     } catch (error: any) {
       toast.error("An error occurred while submitting the form.");
     }
@@ -96,6 +112,9 @@ const InputField = () => {
                 <FormControl>
                   <select
                     {...field}
+                    onChange={(e) =>
+                      field.onChange(e.target.value as TaskStatus)
+                    }
                     className="border rounded-md p-2 bg-white w-fit text-[#666666]"
                   >
                     <option value={TaskStatus.ToDo}>{TaskStatus.ToDo}</option>
@@ -189,7 +208,7 @@ const InputField = () => {
           </div>
 
           <Button type="submit" className="w-full bg-button-gradient">
-            Save
+            {task?._id ? "Update" : "Create"}
           </Button>
         </form>
       </Form>

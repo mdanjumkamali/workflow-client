@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useEffect } from "react";
 import { Task } from "@/interfaces/task.interface";
 import { useAppDispatch, useAppSelector } from "@/redux/redux.hooks";
+import { setSelectedTask } from "@/redux/slice/task.slice";
+import { TaskStatus, updateTaskStatus } from "@/redux/slice/taskStatus.slice";
 import { openSheet } from "@/redux/slice/toggle.slice";
 import {
   deleteTaskThunk,
@@ -10,13 +11,13 @@ import {
   updateTaskThunk,
 } from "@/redux/thunk/task.thunk";
 import { AlignLeft, Plus } from "lucide-react";
+import React, { useEffect } from "react";
 import {
   DragDropContext,
   Draggable,
   Droppable,
   DropResult,
 } from "react-beautiful-dnd";
-import { updateTaskStatus, TaskStatus } from "@/redux/slice/taskStatus.slice";
 import TaskCard from "./TaskCard";
 
 interface Column {
@@ -51,6 +52,11 @@ const Board: React.FC = () => {
 
   const handleDeleteTask = (taskId: string) => {
     dispatch(deleteTaskThunk(taskId));
+  };
+
+  const handleTaskClick = (task: Task) => {
+    dispatch(setSelectedTask(task));
+    dispatch(openSheet());
   };
 
   const columns: BoardState = {
@@ -163,6 +169,7 @@ const Board: React.FC = () => {
                               time={formatDate(task.deadline)}
                               status={task.status}
                               onDelete={() => handleDeleteTask(task._id!)}
+                              onEdit={() => handleTaskClick(task)}
                             />
                           </div>
                         )}

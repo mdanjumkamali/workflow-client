@@ -17,18 +17,19 @@ interface TaskCardProps {
   time: string;
   status: string;
   onDelete: () => void;
+  onEdit: () => void;
 }
 
 const getBadgeColor = (badge: string) => {
   switch (badge.toLowerCase()) {
     case "urgent":
-      return "bg-[#FF6B6B]"; // Red for urgent
+      return "bg-[#FF6B6B]";
     case "medium":
-      return "bg-[#FFA235]"; // Orange for medium
+      return "bg-[#FFA235]";
     case "low":
-      return "bg-[#0ECC5A]"; // Green for low
+      return "bg-[#0ECC5A]";
     default:
-      return "bg-gray-200"; // Default color
+      return "bg-gray-200";
   }
 };
 
@@ -40,17 +41,25 @@ const TaskCard: React.FC<TaskCardProps> = ({
   time,
   status,
   onDelete,
+  onEdit,
 }) => {
-  const handleDelete = () => {
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
     if (onDelete) {
       onDelete();
+    }
+  };
+
+  const handleEdit = () => {
+    if (onEdit) {
+      onEdit();
     }
   };
 
   return (
     <div className="flex flex-col space-y-2">
       <div>
-        <Card>
+        <Card onClick={handleEdit}>
           <CardHeader className="pb-2">
             <CardTitle className="text-[#606060] text-lg font-medium">
               {title}

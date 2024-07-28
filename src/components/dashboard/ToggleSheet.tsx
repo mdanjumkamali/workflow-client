@@ -7,13 +7,16 @@ import { useAppDispatch, useAppSelector } from "@/redux/redux.hooks";
 import { closeSheet } from "@/redux/slice/toggle.slice";
 import { Minimize2, Share2, Star, X } from "lucide-react";
 import InputField from "./InputField";
+import { clearSelectedTask } from "@/redux/slice/task.slice";
 
 const Sheet = () => {
   const dispatch = useAppDispatch();
   const isToggled = useAppSelector((state) => state.toggle.isSheetOpen);
+  const selectedTask = useAppSelector((state) => state.task.selectedTask);
 
   const handleClose = () => {
     dispatch(closeSheet());
+    dispatch(clearSelectedTask());
   };
   return (
     <ExternalSheet open={isToggled} onOpenChange={handleClose}>
@@ -41,7 +44,7 @@ const Sheet = () => {
 
           {/* content */}
           <div className="my-4">
-            <InputField />
+            <InputField task={selectedTask} />
           </div>
 
           <Separator className="my-4" />

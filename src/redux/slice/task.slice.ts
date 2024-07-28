@@ -1,14 +1,17 @@
 import { Task } from "@/interfaces/task.interface";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { set } from "react-hook-form";
 
 interface TaskState {
   tasks: Task[];
+  selectedTask: Task | null;
   loading: boolean;
   error: string | null;
 }
 
 const initialState: TaskState = {
   tasks: [],
+  selectedTask: null,
   loading: false,
   error: null,
 };
@@ -70,6 +73,13 @@ const taskSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
+    setSelectedTask(state, action: PayloadAction<Task | null>) {
+      state.selectedTask = action.payload;
+    },
+
+    clearSelectedTask(state) {
+      state.selectedTask = null;
+    },
   },
 });
 
@@ -86,6 +96,8 @@ export const {
   deleteTaskStart,
   deleteTaskSuccess,
   deleteTaskFailure,
+  setSelectedTask,
+  clearSelectedTask,
 } = taskSlice.actions;
 
 export default taskSlice.reducer;
