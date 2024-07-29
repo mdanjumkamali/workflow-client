@@ -7,7 +7,7 @@ A task management Web App
 To install the necessary dependencies, run:
 
 ```bash
-git clone https://github.com/mdanjumkamali/workflow-api.git
+git clone https://github.com/mdanjumkamali/workflow-client.git
 cd workflow
 npm install
 npm run dev
