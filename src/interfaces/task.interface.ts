@@ -5,6 +5,6 @@ export interface Task {
   status: string;
   priority: string;
   deadline: Date;
-  createdAt?: Date;
+  updatedAt?: Date;
   user?: string;
 }

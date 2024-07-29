@@ -172,7 +172,7 @@ const Board: React.FC = () => {
                               description={task.description!}
                               badge={task.priority}
                               date={formatDate(task.deadline)}
-                              time={createdDate(task.createdAt!)}
+                              time={createdDate(task.updatedAt!)}
                               status={task.status}
                               onDelete={() => handleDeleteTask(task._id!)}
                               onEdit={() => handleTaskClick(task)}
