@@ -10,9 +10,14 @@ To install the necessary dependencies, run:
 git clone https://github.com/mdanjumkamali/workflow-client.git
 cd workflow
 npm install
-npm run dev
 ```
 
+## Development
 
+To start the development server, run:
+
+```bash
+npm run dev
+```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
