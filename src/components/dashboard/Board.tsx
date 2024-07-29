@@ -149,10 +149,9 @@ const Board: React.FC = () => {
                 <div
                   {...provided.droppableProps}
                   ref={provided.innerRef}
-                  className=""
+                  className="min-h-[10px]"
                 >
                   {loading ? (
-                    // Render skeletons while loading
                     <Skeleton className="h-[125px] w-[250px] rounded-xl" />
                   ) : (
                     column.tasks.map((task, index) => (
