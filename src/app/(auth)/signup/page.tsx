@@ -1,24 +1,24 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, SubmitHandler } from "react-hook-form";
-import { z } from "zod";
-import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useAppDispatch } from "@/redux/redux.hooks";
 import { signupThunk } from "@/redux/thunk/auth.thunk";
-import Link from "next/link";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
+import toast from "react-hot-toast";
+import { z } from "zod";
 
 const signUpSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters long."),
@@ -40,6 +40,7 @@ interface SignUpFormData {
 
 const SignUpPage = () => {
   const dispatch = useAppDispatch();
+  const router = useRouter();
   const form = useForm<SignUpFormData>({
     resolver: zodResolver(signUpSchema),
   });
@@ -53,9 +54,11 @@ const SignUpPage = () => {
   const onSubmit: SubmitHandler<SignUpFormData> = async (data) => {
     try {
       await dispatch(signupThunk(data)).unwrap();
-
       toast.success("Account created successfully!");
-    } catch (error: any) {}
+      router.push("/login");
+    } catch (error: any) {
+      toast.error(error.message);
+    }
   };
 
   return (

@@ -1,25 +1,24 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, SubmitHandler } from "react-hook-form";
-import { z } from "zod";
-import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useAppDispatch } from "@/redux/redux.hooks";
 import { loginThunk } from "@/redux/thunk/auth.thunk";
-import Link from "next/link";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff } from "lucide-react";
-import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
+import toast from "react-hot-toast";
+import { z } from "zod";
 
 const loginSchema = z.object({
   email: z
@@ -55,7 +54,9 @@ const SignUpPage = () => {
       await dispatch(loginThunk(data)).unwrap();
       router.push("/dashboard");
       toast.success("Login Successfully!");
-    } catch (error: any) {}
+    } catch (error: any) {
+      toast.error(error.message);
+    }
   };
 
   return (

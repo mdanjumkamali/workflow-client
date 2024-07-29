@@ -19,6 +19,7 @@ import {
   DropResult,
 } from "react-beautiful-dnd";
 import TaskCard from "./TaskCard";
+import moment from "moment";
 
 interface Column {
   id: TaskStatus;
@@ -34,6 +35,11 @@ interface BoardState {
 const formatDate = (isoDate: Date): string => {
   const date = new Date(isoDate);
   return date.toISOString().split("T")[0];
+};
+
+const createdDate = (timestamp: Date) => {
+  const relativeTime = moment(timestamp).fromNow();
+  return relativeTime;
 };
 
 // Board component
@@ -166,7 +172,7 @@ const Board: React.FC = () => {
                               description={task.description!}
                               badge={task.priority}
                               date={formatDate(task.deadline)}
-                              time={formatDate(task.deadline)}
+                              time={createdDate(task.createdAt!)}
                               status={task.status}
                               onDelete={() => handleDeleteTask(task._id!)}
                               onEdit={() => handleTaskClick(task)}
