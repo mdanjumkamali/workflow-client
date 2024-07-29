@@ -20,7 +20,7 @@ import {
 } from "react-beautiful-dnd";
 import TaskCard from "./TaskCard";
 import moment from "moment";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "../ui/skeleton";
 
 interface Column {
   id: TaskStatus;
@@ -133,11 +133,24 @@ const Board: React.FC = () => {
     }
   };
 
+  if (loading)
+    return (
+      <div className="flex ">
+        {loading &&
+          Array(4)
+            .fill(0)
+            .map((_, index) => (
+              <div key={index} className="flex items-center justify-between">
+                <Skeleton className="h-[125px] w-[250px] rounded-xl m-4" />
+              </div>
+            ))}
+      </div>
+    );
   if (error) return <div>{error}</div>;
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <div className="flex flex-col md:flex-row items-start  gap-4">
+      <div className="flex flex-col md:flex-row items-start justify-between gap-4">
         {Object.values(columns).map((column) => (
           <div key={column.id} className="w-full md:w-1/4 rounded-lg p-4">
             <div className="flex items-center justify-between text-[#555555] my-2">
@@ -149,15 +162,15 @@ const Board: React.FC = () => {
                 <div
                   {...provided.droppableProps}
                   ref={provided.innerRef}
-                  className="min-h-[10px]"
+                  className="min-h-[500px]"
                 >
-                  {loading ? (
-                    <Skeleton className="h-[125px] w-[250px] rounded-xl" />
-                  ) : (
-                    column.tasks.map((task, index) => (
+                  {column.tasks.map((task, index) => {
+                    const draggableId = task._id!;
+
+                    return (
                       <Draggable
-                        key={task._id}
-                        draggableId={task._id!}
+                        key={draggableId}
+                        draggableId={draggableId}
                         index={index}
                       >
                         {(provided) => (
@@ -180,19 +193,20 @@ const Board: React.FC = () => {
                           </div>
                         )}
                       </Draggable>
-                    ))
-                  )}
+                    );
+                  })}
+
+                  <button
+                    className="w-full mt-3 flex items-center justify-between bg-black-gradient text-white p-2 rounded-md"
+                    onClick={() => handleClick(column.id)}
+                  >
+                    Add New
+                    <Plus />
+                  </button>
                   {provided.placeholder}
                 </div>
               )}
             </Droppable>
-            <button
-              className="w-full mt-3 flex items-center justify-between bg-black-gradient text-white p-2 rounded-md"
-              onClick={() => handleClick(column.id)}
-            >
-              Add New
-              <Plus />
-            </button>
           </div>
         ))}
       </div>
