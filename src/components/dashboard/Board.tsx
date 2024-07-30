@@ -21,6 +21,7 @@ import {
 import TaskCard from "./TaskCard";
 import moment from "moment";
 import { Skeleton } from "../ui/skeleton";
+import toast from "react-hot-toast";
 
 interface Column {
   id: TaskStatus;
@@ -59,6 +60,7 @@ const Board: React.FC = () => {
 
   const handleDeleteTask = (taskId: string) => {
     dispatch(deleteTaskThunk(taskId));
+    toast.success("Task deleted successfully!");
   };
 
   const handleTaskClick = (task: Task) => {
