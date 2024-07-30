@@ -18,8 +18,6 @@ export const signupThunk = createAsyncThunk(
   "auth/signup",
   async (input: Signup, thunkAPI) => {
     const user = await signupService(input);
-    thunkAPI.dispatch(login({ token: user.token }));
-    thunkAPI.dispatch(setUser(user.user));
   }
 );
 
@@ -27,5 +25,6 @@ export const logoutThunk = createAsyncThunk(
   "auth/logout",
   async (_, thunkAPI) => {
     thunkAPI.dispatch(logout());
+    localStorage.removeItem("token");
   }
 );
