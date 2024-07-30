@@ -36,7 +36,7 @@ interface LoginFormData {
   password: string;
 }
 
-const SignUpPage = () => {
+const LoginPage = () => {
   const dispatch = useAppDispatch();
   const [isSubmited, setIsSubmited] = useState(false);
   const router = useRouter();
@@ -133,4 +133,4 @@ const SignUpPage = () => {
   );
 };
 
-export default SignUpPage;
+export default LoginPage;
