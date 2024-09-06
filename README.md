@@ -1,10 +1,26 @@
-# Workflow
+# Pokedex
 
-A task management Web App
+# Features:
 
-## Installation
+### Search by name: Users can enter one or more Pokémon names to retrieve their details.
 
-To install the necessary dependencies, run:
+### Filter by type: Users can filter Pokémon by their primary type.
+
+### Responsive design: The app adapts to different screen sizes and devices.
+
+
+### Tech Stack:
+
+* Next.js
+* TypeScript
+* Prisma
+* tRPC
+* React Query
+* Material UI
+* Prerequisites:
+
+
+### Installation:
 
 ```bash
 git clone https://github.com/mdanjumkamali/workflow-client.git
@@ -12,12 +28,23 @@ cd workflow
 npm install
 ```
 
-## Development
+### Set up environment variables:
+* Create a .env file in the project root.
 
-To start the development server, run:
+* Add your PostgreSQL database connection string you can refer env.local file
+
+### run the development server:
 
 ```bash
 npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+
