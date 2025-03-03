@@ -17,6 +17,8 @@ import { useAppDispatch, useAppSelector } from "@/redux/redux.hooks";
 import { openSheet } from "@/redux/slice/toggle.slice";
 import { logout } from "@/redux/slice/auth.slice";
 import { TaskStatus, updateTaskStatus } from "@/redux/slice/taskStatus.slice";
+import { ModeToggle } from "../ui/darkmode";
+import { Button } from "../ui/button";
 
 const link = [
   {
@@ -70,12 +72,13 @@ const Sidebar = () => {
         {/* icon */}
         <div className="flex items-center justify-between my-6">
           <div className="flex items-center gap-2">
-            <BellDot />
+            {/* <BellDot />
             <Loader />
-            <ChevronsRight />
+            <ChevronsRight /> */}
+            <ModeToggle />
           </div>
           <button
-            className="bg-[#F4F4F4] px-3 py-2 rounded-md text-[#797979]"
+            className="bg-secondary px-3 py-2 rounded-md text-muted-foreground hover:bg-secondary/80"
             onClick={logOut}
           >
             Logout
@@ -89,8 +92,8 @@ const Sidebar = () => {
               key={index}
               className={
                 item.name === "Home"
-                  ? "bg-[#F4F4F4] p-2 rounded-md flex items-center gap-6 my-2 cursor-pointer"
-                  : "flex items-center gap-6 my-2 p-2 hover:bg-[#F4F4F4] hover:rounded-md cursor-pointer"
+                  ? "bg-secondary p-2 rounded-md flex items-center gap-6 my-2 cursor-pointer"
+                  : "flex items-center gap-6 my-2 p-2 hover:bg-secondary hover:rounded-md cursor-pointer"
               }
             >
               {item.icon}
@@ -101,22 +104,23 @@ const Sidebar = () => {
 
         {/* button */}
         <div className="py-3">
-          <button
-            className="flex items-center justify-center gap-1 py-3 rounded-md bg-button-gradient text-white w-full"
+          <Button
+            className="flex items-center justify-center gap-1 py-3 rounded-md  text-primary-foreground w-full hover:bg-primary/90"
             onClick={() => handleClick(TaskStatus.ToDo)}
           >
             Create new task <CirclePlus />
-          </button>
+          </Button>
         </div>
       </div>
 
       {/* download button */}
-
-      <div className="bg-[#F3F3F3] flex items-center gap-4 px-2 py-1 rounded-md cursor-pointer">
+      <div className="bg-secondary flex items-center gap-4 px-2 py-1 rounded-md cursor-pointer hover:bg-secondary/80">
         <ArrowDownToLine />
         <div className="flex flex-col">
           <span className="text-lg">Download the app</span>
-          <span className="text-sm">Get the full experience </span>
+          <span className="text-sm text-muted-foreground">
+            Get the full experience{" "}
+          </span>
         </div>
       </div>
     </div>

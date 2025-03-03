@@ -61,20 +61,16 @@ const TaskCard: React.FC<TaskCardProps> = ({
       <div>
         <Card onClick={handleEdit}>
           <CardHeader className="pb-2">
-            <CardTitle className="text-[#606060] text-lg font-medium">
-              {title}
-            </CardTitle>
-            <CardDescription className="text-[#797979]">
-              {description}
-            </CardDescription>
+            <CardTitle className="text-lg font-medium">{title}</CardTitle>
+            <CardDescription>{description}</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-2">
             <Badge className={`w-fit ${getBadgeColor(badge)}`}>{badge}</Badge>
-            <span className="flex items-center gap-1 text-[#606060]">
+            <span className="flex items-center gap-1 ">
               <Clock />
               {date}
             </span>
-            <span className="text-[#797979] flex items-center justify-between">
+            <span className="flex items-center justify-between">
               {time}
               <Trash2 className="cursor-pointer" onClick={handleDelete} />
             </span>

@@ -11,7 +11,7 @@ import {
   updateTaskThunk,
 } from "@/redux/thunk/task.thunk";
 import { AlignLeft, Plus } from "lucide-react";
-import React, { useEffect } from "react";
+import React, { useEffect, useCallback, useMemo } from "react";
 import {
   DragDropContext,
   Draggable,
@@ -22,6 +22,7 @@ import TaskCard from "./TaskCard";
 import moment from "moment";
 import { Skeleton } from "../ui/skeleton";
 import toast from "react-hot-toast";
+import { Button } from "../ui/button";
 
 interface Column {
   id: TaskStatus;
@@ -31,6 +32,12 @@ interface Column {
 
 interface BoardState {
   [key: string]: Column;
+}
+
+interface BoardProps {
+  filterStatus: string | null;
+  filterPriority: string | null;
+  sortOrder: string | null;
 }
 
 // Helper function to format date
@@ -45,50 +52,117 @@ const createdDate = (timestamp: Date) => {
 };
 
 // Board component
-const Board: React.FC = () => {
+const Board: React.FC<BoardProps> = ({
+  filterStatus,
+  filterPriority,
+  sortOrder,
+}) => {
   const dispatch = useAppDispatch();
   const { tasks, loading, error } = useAppSelector((s) => s.task);
 
   useEffect(() => {
     dispatch(fetchTasksThunk());
-  }, []);
+  }, [dispatch]);
+
+  // Optimize event handlers with useCallback
+  const handleDeleteTask = useCallback(
+    (taskId: string) => {
+      dispatch(deleteTaskThunk(taskId));
+      toast.success("Task deleted successfully!");
+    },
+    [dispatch]
+  );
+
+  const handleTaskClick = useCallback(
+    (task: Task) => {
+      dispatch(setSelectedTask(task));
+      dispatch(openSheet());
+    },
+    [dispatch]
+  );
+
+  // Memoize filtered and sorted tasks
+  const filteredAndSortedTasks = useMemo(() => {
+    let filteredTasks = [...tasks];
+
+    // Apply status filter
+    if (filterStatus === "completed") {
+      filteredTasks = filteredTasks.filter(
+        (task) => task.status === TaskStatus.Finished
+      );
+    } else if (filterStatus === "pending") {
+      filteredTasks = filteredTasks.filter(
+        (task) => task.status !== TaskStatus.Finished
+      );
+    }
+
+    // Apply priority filter
+    if (filterPriority) {
+      filteredTasks = filteredTasks.filter(
+        (task) => task.priority.toLowerCase() === filterPriority.toLowerCase()
+      );
+    }
+
+    // Apply sorting
+    if (sortOrder) {
+      return [...filteredTasks].sort((a, b) => {
+        const dateA = new Date(a.updatedAt || a.createdAt || 0).getTime();
+        const dateB = new Date(b.updatedAt || b.createdAt || 0).getTime();
+
+        return sortOrder === "newest" ? dateB - dateA : dateA - dateB;
+      });
+    }
+
+    return filteredTasks;
+  }, [tasks, filterStatus, filterPriority, sortOrder]);
+
+  // Memoize columns to prevent unnecessary recalculations
+  const columns = useMemo(
+    () => ({
+      [TaskStatus.ToDo]: {
+        id: TaskStatus.ToDo,
+        title: "To Do",
+        tasks: filteredAndSortedTasks.filter(
+          (task) => task.status === TaskStatus.ToDo
+        ),
+      },
+      [TaskStatus.InProgress]: {
+        id: TaskStatus.InProgress,
+        title: "In Progress",
+        tasks: filteredAndSortedTasks.filter(
+          (task) => task.status === TaskStatus.InProgress
+        ),
+      },
+      [TaskStatus.UnderReview]: {
+        id: TaskStatus.UnderReview,
+        title: "Under Review",
+        tasks: filteredAndSortedTasks.filter(
+          (task) => task.status === TaskStatus.UnderReview
+        ),
+      },
+      [TaskStatus.Finished]: {
+        id: TaskStatus.Finished,
+        title: "Finished",
+        tasks: filteredAndSortedTasks.filter(
+          (task) => task.status === TaskStatus.Finished
+        ),
+      },
+    }),
+    [filteredAndSortedTasks]
+  );
+
+  // Memoize active filter count
+  const activeFilterCount = useMemo(() => {
+    let count = 0;
+    if (filterStatus) count++;
+    if (filterPriority) count++;
+    if (sortOrder) count++;
+    return count;
+  }, [filterStatus, filterPriority, sortOrder]);
 
   const handleClick = (status: TaskStatus) => {
     dispatch(openSheet());
     dispatch(updateTaskStatus(status));
-  };
-
-  const handleDeleteTask = (taskId: string) => {
-    dispatch(deleteTaskThunk(taskId));
-    toast.success("Task deleted successfully!");
-  };
-
-  const handleTaskClick = (task: Task) => {
-    dispatch(setSelectedTask(task));
-    dispatch(openSheet());
-  };
-
-  const columns: BoardState = {
-    [TaskStatus.ToDo]: {
-      id: TaskStatus.ToDo,
-      title: "To Do",
-      tasks: tasks.filter((task) => task.status === TaskStatus.ToDo),
-    },
-    [TaskStatus.InProgress]: {
-      id: TaskStatus.InProgress,
-      title: "In Progress",
-      tasks: tasks.filter((task) => task.status === TaskStatus.InProgress),
-    },
-    [TaskStatus.UnderReview]: {
-      id: TaskStatus.UnderReview,
-      title: "Under Review",
-      tasks: tasks.filter((task) => task.status === TaskStatus.UnderReview),
-    },
-    [TaskStatus.Finished]: {
-      id: TaskStatus.Finished,
-      title: "Finished",
-      tasks: tasks.filter((task) => task.status === TaskStatus.Finished),
-    },
   };
 
   const onDragEnd = (result: DropResult) => {
@@ -137,34 +211,37 @@ const Board: React.FC = () => {
 
   if (loading)
     return (
-      <div className="flex ">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
         {loading &&
           Array(4)
             .fill(0)
             .map((_, index) => (
               <div key={index} className="flex items-center justify-between">
-                <Skeleton className="h-[125px] w-[250px] rounded-xl m-4" />
+                <Skeleton className="h-[125px] w-full rounded-xl" />
               </div>
             ))}
       </div>
     );
-  if (error) return <div>{error}</div>;
+  if (error) return <div className="p-4 text-red-500">{error}</div>;
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <div className="flex flex-col md:flex-row items-start justify-between gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full h-screen dark:bg-[#FAF9F6]">
         {Object.values(columns).map((column) => (
-          <div key={column.id} className="w-full md:w-1/4 rounded-lg p-4">
+          <div
+            key={column.id}
+            className="w-full rounded-lg p-2 md:p-4 bg-gray-50/50"
+          >
             <div className="flex items-center justify-between text-[#555555] my-2">
-              <p className="text-md">{column.title}</p>
-              <AlignLeft />
+              <p className="text-sm md:text-md font-medium">{column.title}</p>
+              <AlignLeft className="h-4 w-4 md:h-5 md:w-5" />
             </div>
             <Droppable droppableId={column.id}>
               {(provided) => (
                 <div
                   {...provided.droppableProps}
                   ref={provided.innerRef}
-                  className="min-h-[500px]"
+                  className="min-h-[300px] md:min-h-[500px]"
                 >
                   {column.tasks.map((task, index) => {
                     const draggableId = task._id!;
@@ -180,7 +257,7 @@ const Board: React.FC = () => {
                             ref={provided.innerRef}
                             {...provided.draggableProps}
                             {...provided.dragHandleProps}
-                            className="mb-4"
+                            className="mb-3 md:mb-4"
                           >
                             <TaskCard
                               title={task.title}
@@ -198,13 +275,13 @@ const Board: React.FC = () => {
                     );
                   })}
 
-                  <button
-                    className="w-full mt-3 flex items-center justify-between bg-black-gradient text-white p-2 rounded-md"
+                  <Button
+                    className="w-full mt-2 md:mt-3 flex items-center justify-between  text-white p-2 rounded-md text-sm dark:bg-black"
                     onClick={() => handleClick(column.id)}
                   >
-                    Add New
-                    <Plus />
-                  </button>
+                    <span>Add New</span>
+                    <Plus className="h-4 w-4" />
+                  </Button>
                   {provided.placeholder}
                 </div>
               )}

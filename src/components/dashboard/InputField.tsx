@@ -47,7 +47,6 @@ interface FormData {
 }
 
 const InputField: React.FC<InputFieldProps> = ({ task }) => {
-  console.log(task);
   const dispatch = useAppDispatch();
   const currentStatus = useAppSelector((state) => state.taskStatus.status);
 
@@ -207,7 +206,7 @@ const InputField: React.FC<InputFieldProps> = ({ task }) => {
             Add custom property
           </div>
 
-          <Button type="submit" className="w-full bg-button-gradient">
+          <Button type="submit" className="w-full">
             {task?._id ? "Update" : "Create"}
           </Button>
         </form>
